@@ -35,9 +35,9 @@
       </div>
       <div class="modal-body">
 		<form action="" method="post">
-		<p>内容：<br><textarea id="content" name="content" class="form-control"></textarea></p>
-		<p>标签：<br><input type="text" id="tags" name="tags" class="form-control"></p>
-		<p>时间：<br><input type="text" id="created" name="created" value="<%= created %>" class="form-control"></p>		
+		<p>Log content：<br><textarea id="content" name="content" class="form-control"></textarea></p>
+		<p>Tags：<br><input type="text" id="tags" name="tags" class="form-control"></p>
+		<p>Created：<br><input type="text" id="created" name="created" value="<%= created %>" class="form-control"></p>		
 		</form>
       </div>
       <div class="modal-footer">
@@ -74,6 +74,12 @@ function post(){
     var content = $('#content').val();
     var tags = $('#tags').val();
     var created = $('#created').val();
+    
+    if(content.length < 5){
+    	alert('Log content is too short ');
+    	return;
+    }
+    
     $.post('/new', {
         content: content,
         tags: tags,

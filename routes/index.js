@@ -22,9 +22,9 @@ var ContentSchema = new Schema({
 mongoose.model('Content', ContentSchema);
 var Content = mongoose.model('Content');
 
-mongoose.connect('mongodb://localhost:27017/mylog', function(err){
+mongoose.connect('mongodb://localhost:27017/easylog', function(err){
     if (err) {
-        console.error('connect to %s error: ', 'mongodb://localhost:27017/mylog', err.message);
+        console.error('connect to %s error: ', 'mongodb://localhost:27017/easylog', err.message);
         process.exit(1);
     }
 });
