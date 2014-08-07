@@ -15,8 +15,8 @@
 	<table id="list" class="table table-hover">
 		<thead>
 			<tr>
-				<th>Created</th>				
-				<th>Tags</th>
+				<th style="width: 200px;">Created</th>				
+				<th style="width: 200px;">Tags</th>
 				<th>Content</th>			
 			</tr>
 		</thead>
@@ -48,36 +48,73 @@
   </div>
 </div>
 <script id="template-list" type="text/x-handlebars-template">
-{{#each list}}
+{{#each this}}
 <tr>
-	<td>{{ created }}</td>	
+	<td>{{ created_friendly }}</td>	
 	<td>{{ tags }}</td>
 	<td>{{ content }}</td>
 </tr>
 {{/each}}           
 </script>
 <script>
-$(function(){
-    latest();
-});
+function format_date(date, friendly){		
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+    var second = date.getSeconds();
+    if (friendly) {
+        var now = new Date();
+        var mseconds = -(date.getTime() - now.getTime());
+        var time_std = [1000, 60 * 1000, 60 * 60 * 1000, 24 * 60 * 60 * 1000];
+        if (mseconds < time_std[3]) {
+            if (mseconds > 0 && mseconds < time_std[1]) {
+                return Math.floor(mseconds / time_std[0]).toString() + ' second ago';
+            }
+            if (mseconds > time_std[1] && mseconds < time_std[2]) {
+                return Math.floor(mseconds / time_std[1]).toString() + ' minute ago';
+            }
+            if (mseconds > time_std[2]) {
+                return Math.floor(mseconds / time_std[2]).toString() + ' hour ago';
+            }
+        }
+    }
+    
+    //month = ((month < 10) ? '0' : '') + month;
+    //day = ((day < 10) ? '0' : '') + day;
+    hour = ((hour < 10) ? '0' : '') + hour;
+    minute = ((minute < 10) ? '0' : '') + minute;
+    second = ((second < 10) ? '0' : '') + second;
+    
+    var thisYear = new Date().getFullYear();
+    year = (thisYear === year) ? '' : (year + '-');
+    return year + month + '-' + day + ' ' + hour + ':' + minute;
+}
+
 function latest(){
     $.get('/latest', {
         offset: 0
-    }, function(result){    	
+    }, function(result){       
+        $.each(result.list, function(i, item){
+            //item.created_friendly = moment(item.created).format('YYYY-MM-DD HH:mm');			
+            item.created_friendly = format_date(moment(item.created).toDate(), true);
+        });        
         var source = $('#template-list').html();
         var template = Handlebars.compile(source);
-        var html = template(result);
+        var html = template(result.list);
         $('#list tbody').html(html);
     });
 }
+
 function post(){
     var content = $('#content').val();
     var tags = $('#tags').val();
     var created = $('#created').val();
     
-    if(content.length < 5){
-    	alert('Log content is too short ');
-    	return;
+    if (content.length < 5) {
+        alert('Log content is too short ');
+        return;
     }
     
     $.post('/new', {
@@ -85,7 +122,7 @@ function post(){
         tags: tags,
         created: created
     }, function(result){
-    	alert(result.error);
+        alert(result.error);
         if (result.error == 'err') {
         }
         else {
@@ -95,6 +132,11 @@ function post(){
         }
     });
 }
+
+$(function(){
+    latest();
+});
+
 </script>
 </body>
 </html>
