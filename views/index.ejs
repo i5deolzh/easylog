@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Easy Log</title>
+<link rel="stylesheet" href="/stylesheets/style.css" />
+<link rel="stylesheet" href="/javascripts/bootstrap/css/bootstrap.min.css" />
+<script src="/javascripts/jquery.min.js"></script>
+<script src="/javascripts/bootstrap/js/bootstrap.min.js"></script>
+<script src="/javascripts/moment.js"></script>
+<script src="/javascripts/handlebars.js"></script>
+</head>
+<body>
+<h2>Latest</h2>
+<div style="max-height: 450px; overflow-y: scroll;">
+	<table id="list" class="table table-hover">
+		<thead>
+			<tr>
+				<th>Created</th>				
+				<th>Tags</th>
+				<th>Content</th>			
+			</tr>
+		</thead>
+		<tbody>	
+		</tbody>
+	</table>
+</div>
+<p><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#postModal">New</button></p>
+<!-- Post Modal -->
+<div id="postModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+      	<button type="button" class="close" data-dismiss="modal">&times;</button>
+      	<h4 class="modal-title">New</h4>                
+      </div>
+      <div class="modal-body">
+		<form action="" method="post">
+		<p>内容：<br><textarea id="content" name="content" class="form-control"></textarea></p>
+		<p>标签：<br><input type="text" id="tags" name="tags" class="form-control"></p>
+		<p>时间：<br><input type="text" id="created" name="created" value="<%= created %>" class="form-control"></p>		
+		</form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="post()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script id="template-list" type="text/x-handlebars-template">
+{{#each list}}
+<tr>
+	<td>{{ created }}</td>	
+	<td>{{ tags }}</td>
+	<td>{{ content }}</td>
+</tr>
+{{/each}}           
+</script>
+<script>
+$(function(){
+    latest();
+});
+function latest(){
+    $.get('/latest', {
+        offset: 0
+    }, function(result){    	
+        var source = $('#template-list').html();
+        var template = Handlebars.compile(source);
+        var html = template(result);
+        $('#list tbody').html(html);
+    });
+}
+function post(){
+    var content = $('#content').val();
+    var tags = $('#tags').val();
+    var created = $('#created').val();
+    $.post('/new', {
+        content: content,
+        tags: tags,
+        created: created
+    }, function(result){
+    	alert(result.error);
+        if (result.error == 'err') {
+        }
+        else {
+            $('#content').val('');
+            $('#tags').val('');
+            latest();
+        }
+    });
+}
+</script>
+</body>
+</html>
