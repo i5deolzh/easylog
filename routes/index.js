@@ -3,6 +3,8 @@ var router = express.Router();
 
 var moment = require('moment');
 
+var render = require('../common/render_helpers');
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -37,6 +39,11 @@ router.get('/', function(req, res){
 
 router.get('/latest', function(req, res){
     Content.find({}, function(err, docs){
+		
+		docs.forEach(function(item){
+			item.content = render.markdown(item.content);
+		});
+		
         res.send({
             list: docs
         });
