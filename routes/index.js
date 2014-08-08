@@ -4,6 +4,8 @@ var router = express.Router();
 var moment = require('moment');
 
 var render = require('../common/render_helpers');
+var util = require('../common/util');
+
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
@@ -42,6 +44,7 @@ router.get('/latest', function(req, res){
     
         docs.forEach(function(item){
             item.content = render.markdown(item.content);
+			item.created_friendly = util.format_date(item.created, true);
         });
         
         res.send({

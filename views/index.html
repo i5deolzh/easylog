@@ -73,7 +73,7 @@ function latest(){
         offset: 0
     }, function(result){
         $.each(result.list, function(i, item){
-            item.created_friendly = format_date(moment(item.created).toDate(), true);
+            //item.created_friendly = format_date(moment(item.created).toDate(), true);
         });
         var source = $('#template-list').html();
         var template = Handlebars.compile(source);
