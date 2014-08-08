@@ -39,11 +39,11 @@ router.get('/', function(req, res){
 
 router.get('/latest', function(req, res){
     Content.find({}, function(err, docs){
-		
-		docs.forEach(function(item){
-			item.content = render.markdown(item.content);
-		});
-		
+    
+        docs.forEach(function(item){
+            item.content = render.markdown(item.content);
+        });
+        
         res.send({
             list: docs
         });
